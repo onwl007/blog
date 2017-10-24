@@ -51,6 +51,9 @@ dependencies {
 	//添加H2的依赖
 	runtime('com.h2database:h2:1.4.193')
 
+	//添加Markdown parser依赖
+	compile('es.nitaur.markdown:txtmark:0.16')
+
 	// 添加  Spring Security 依赖
 	compile('org.springframework.boot:spring-boot-starter-security')
 
