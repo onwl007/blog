@@ -60,6 +60,9 @@ dependencies {
 	// 添加 Spring Boot 开发工具依赖
 	compile("org.springframework.boot:spring-boot-devtools")
 
+	// 添加  Spring Data Elasticsearch 的依赖
+	compile('org.springframework.boot:spring-boot-starter-data-elasticsearch')
+
 	// 添加   Thymeleaf Spring Security 依赖，与 Thymeleaf 版本一致都是 3.x
 	compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4:3.0.2.RELEASE')
 
