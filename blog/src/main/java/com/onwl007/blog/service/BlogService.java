@@ -53,6 +53,7 @@ public interface BlogService {
      * @return
      */
     Page<Blog> listBlogsByCatalog(Catalog catalog, Pageable pageable);
+
     /**
      * 阅读量递增
      * @param id
