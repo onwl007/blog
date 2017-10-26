@@ -1,6 +1,9 @@
 package com.onwl007.blog.controller;
 
+import com.onwl007.blog.domain.Catalog;
 import com.onwl007.blog.domain.User;
+import com.onwl007.blog.service.BlogService;
+import com.onwl007.blog.service.CatalogService;
 import com.onwl007.blog.service.UserService;
 import com.onwl007.blog.vo.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,12 @@ public class UserspaceController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private BlogService blogService;
+
+    @Autowired
+    private CatalogService catalogService;
 
     @Value("${file.server.url}")
     private String fileServerUrl;
