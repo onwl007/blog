@@ -12,7 +12,7 @@ public class Vote {
     private Long id; // 用户的唯一标识
 
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(nullable = false) // 映射为字段，值不能为空
@@ -33,9 +33,11 @@ public class Vote {
     public void setId(Long id) {
         this.id = id;
     }
+
     public User getUser() {
         return user;
     }
+
     public void setUser(User user) {
         this.user = user;
     }
