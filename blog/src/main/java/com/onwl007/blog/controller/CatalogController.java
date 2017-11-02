@@ -39,6 +39,7 @@ public class CatalogController {
      * @param model
      * @return
      */
+    @GetMapping
     public String listCatalogs(@RequestParam(value = "username", required = true) String username, Model model) {
         User user = (User) userDetailsService.loadUserByUsername(username);
         List<Catalog> catalogs = catalogService.listCatalogs(user);
