@@ -19,7 +19,7 @@ import java.util.List;
 @Controller
 public class MainController {
 
-    private static final Long ROLE_USER_AUTHORITY_ID=2L;
+    private static final Long ROLE_USER_AUTHORITY_ID = 2L;
 
     @Autowired
     private UserService userService;
@@ -34,9 +34,14 @@ public class MainController {
 
     @GetMapping("/index")
     public String index() {
-        return "index";
+        return "redirect:/blogs";
     }
 
+    /**
+     * 获取登录界面
+     *
+     * @return
+     */
     @GetMapping("/login")
     public String login() {
         return "login";
@@ -56,11 +61,12 @@ public class MainController {
 
     /**
      * 注册用户
+     *
      * @param user
      * @return
      */
     @PostMapping("/register")
-    public String registerUser(User user){
+    public String registerUser(User user) {
         List<Authority> authorities = new ArrayList<>();
         authorities.add(authorityService.getAuthorityById(ROLE_USER_AUTHORITY_ID));
         user.setAuthorities(authorities);
