@@ -6,12 +6,12 @@ import com.alibaba.fastjson.JSON;
  * @author onwl007@126.com
  * @date 2018/3/7 21:17
  */
-public class Result {
+public class RestResult {
     private int code;
     private String message;
     private Object data;
 
-    public Result setCode(ResultCode resultCode) {
+    public RestResult setCode(ResultCode resultCode) {
         this.code = resultCode.code();
         return this;
     }
@@ -24,7 +24,7 @@ public class Result {
         return message;
     }
 
-    public Result setMessage(String message) {
+    public RestResult setMessage(String message) {
         this.message = message;
         return this;
     }
@@ -33,7 +33,7 @@ public class Result {
         return data;
     }
 
-    public Result setData(Object data) {
+    public RestResult setData(Object data) {
         this.data = data;
         return this;
     }
