@@ -1,6 +1,6 @@
 package com.onwl007.blog.util;
 
-import com.onwl007.blog.domain.Result;
+import com.onwl007.blog.domain.RestResult;
 import com.onwl007.blog.domain.ResultCode;
 
 /**
@@ -11,21 +11,21 @@ import com.onwl007.blog.domain.ResultCode;
 public class ResultGenerator {
     private static final String DEFAULT_SUCCESS_MESSAGE = "SUCCESS";
 
-    public static Result genSuccessResult() {
-        return new Result()
+    public static RestResult genSuccessResult() {
+        return new RestResult()
                 .setCode(ResultCode.SUCCESS)
                 .setMessage(DEFAULT_SUCCESS_MESSAGE);
     }
 
-    public static Result genSuccessResult(Object data) {
-        return new Result()
+    public static RestResult genSuccessResult(Object data) {
+        return new RestResult()
                 .setCode(ResultCode.SUCCESS)
                 .setMessage(DEFAULT_SUCCESS_MESSAGE)
                 .setData(data);
     }
 
-    public static Result genFailResult(String message) {
-        return new Result()
+    public static RestResult genFailResult(String message) {
+        return new RestResult()
                 .setCode(ResultCode.FAIL)
                 .setMessage(message);
     }
