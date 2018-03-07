@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface BlogRepository extends JpaRepository<Blog,Long>{
 
     /**
@@ -20,6 +22,12 @@ public interface BlogRepository extends JpaRepository<Blog,Long>{
      */
     @Deprecated
     Page<Blog> findByUserAndTitleLikeOrderByCreateTimeDesc(User user, String title, Pageable pageable);
+
+    /**
+     * 查询所有的博客并按照时间的降序进行排列
+     * @return
+     */
+    List<Blog> findAllByOrderByCreateTimeDesc();
 
     /**
      * 根据用户名分页查询用户列表

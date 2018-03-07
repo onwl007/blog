@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * blog服务
  */
@@ -83,6 +85,16 @@ public class BlogServiceImpl implements BlogService{
         title="%"+title+"%";
         Page<Blog> blogs=blogRepository.findByUserAndTitleLike(user,title,pageable);
         return blogs;
+    }
+
+    /**
+     * 查询所有博客并按照时间降序排列
+     * @return
+     */
+    @Override
+    public List<Blog> listBlogsByCreatTimeDsec() {
+        List<Blog> blogList=blogRepository.findAllByOrderByCreateTimeDesc();
+        return blogList;
     }
 
     /**

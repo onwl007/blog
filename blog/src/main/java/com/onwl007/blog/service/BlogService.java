@@ -6,6 +6,8 @@ import com.onwl007.blog.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * blog服务接口
  */
@@ -53,6 +55,12 @@ public interface BlogService {
      * @return
      */
     Page<Blog> listBlogsByCatalog(Catalog catalog, Pageable pageable);
+
+    /**
+     * 查询所有博客并按照时间降序排列
+     * @return
+     */
+    List<Blog> listBlogsByCreatTimeDsec();
 
     /**
      * 阅读量递增
