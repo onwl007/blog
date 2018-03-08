@@ -1,33 +1,23 @@
 package com.onwl007.blog.domain;
 
+import com.alibaba.fastjson.JSON;
+
 /**
  * 统一封装API返回信息
  * 千万别加@Entity 否则Hibernate会给你创建表
  */
 public class RestResult {
-    //状态码
     private int code;
-    //消息
     private String message;
-    //额外的内容
     private Object data;
 
-    public RestResult(){
-
-    }
-
-    public RestResult setCode(ResultCode code) {
-        this.code = code.getCode();
+    public RestResult setCode(RestResult restResult){
+        this.code=restResult.getCode();
         return this;
     }
 
     public int getCode() {
         return code;
-    }
-
-    public RestResult setCode(int code) {
-        this.code = code;
-        return this;
     }
 
     public String getMessage() {
@@ -46,5 +36,10 @@ public class RestResult {
     public RestResult setData(Object data) {
         this.data = data;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
     }
 }
