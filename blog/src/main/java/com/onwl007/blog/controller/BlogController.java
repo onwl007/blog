@@ -15,10 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,32 +32,47 @@ public class BlogController {
     @Autowired
     private BlogService blogService;
 
+    @Autowired
     private ResultGenerator generator;
 
     /**
      * 查询全部博客文章并按照时间降序排列
+     *
      * @return
      */
     @GetMapping
-    public RestResult listBlogs(){
-        List<Blog> blogList=blogService.listBlogsByCreatTimeDsec();
-        if (blogList!=null&&blogList.size()>0){
-            return generator.getSuccessResult("查询全部博客文章成功",blogList);
+    public String listBlogs() {
+        List<Blog> blogList = blogService.listBlogsByCreatTimeDsec();
+        if (blogList != null && blogList.size() > 0) {
+            return generator.getSuccessResult("查询全部博客文章成功", blogList).toString();
         }
-        return generator.getFailResult("查询全部博客文章失败");
+        return generator.getFailResult("查询全部博客文章失败").toString();
+    }
+
+    @GetMapping("/{id}")
+    public String queryBlogById(@PathVariable("id") Long id) {
+        Blog blog = blogService.getBlogById(id);
+        if (!blog.equals("")) {
+            return generator.getSuccessResult("查询博客成功", blog).toString();
+        }
+        return generator.getFailResult("查询博客失败").toString();
     }
 
     @GetMapping("/newest")
-    public String listNewestEsBlogs(Model model) {
+    public String listNewestEsBlogs() {
         List<EsBlog> newest = esBlogService.listTop5NewestEsBlogs();
-        model.addAttribute("newest", newest);
-        return "newest";
+        if (newest != null && newest.size() > 0) {
+            return generator.getSuccessResult("查询最新 Top5 文章成功", newest).toString();
+        }
+        return generator.getFailResult("查询最新 Top5 失败").toString();
     }
 
     @GetMapping("/hotest")
-    public String listHotestEsBlogs(Model model) {
+    public String listHotestEsBlogs() {
         List<EsBlog> hotest = esBlogService.listTop5HotestEsBlogs();
-        model.addAttribute("hotest", hotest);
-        return "hotest";
+        if (hotest != null && hotest.size() > 0) {
+            return generator.getSuccessResult("查询最热 Top5 文章成功", hotest).toString();
+        }
+        return generator.getFailResult("查询最热 Top5 失败").toString();
     }
 }
