@@ -11,8 +11,8 @@ public class RestResult {
     private String message;
     private Object data;
 
-    public RestResult setCode(RestResult restResult){
-        this.code=restResult.getCode();
+    public RestResult setCode(ResultCode resultCode){
+        this.code=resultCode.getCode();
         return this;
     }
 
