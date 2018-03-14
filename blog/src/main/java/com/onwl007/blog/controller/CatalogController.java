@@ -4,6 +4,7 @@ import com.onwl007.blog.domain.Catalog;
 import com.onwl007.blog.domain.User;
 import com.onwl007.blog.service.CatalogService;
 import com.onwl007.blog.util.ConstraintViolationExceptionHandler;
+import com.onwl007.blog.util.ResultGenerator;
 import com.onwl007.blog.vo.CatalogVO;
 import com.onwl007.blog.vo.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +33,17 @@ public class CatalogController {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private ResultGenerator generator;
+
+
     /**
      * 获取分类列表
-     *
      * @param username
-     * @param model
      * @return
      */
     @GetMapping
-    public String listCatalogs(@RequestParam(value = "username", required = true) String username, Model model) {
+    public String listCatalogs(@RequestParam(value = "username",required = true)String username){
         User user = (User) userDetailsService.loadUserByUsername(username);
         List<Catalog> catalogs = catalogService.listCatalogs(user);
 
@@ -55,69 +58,48 @@ public class CatalogController {
             }
         }
 
-        model.addAttribute("isCatalogsOwner", isOwner);
-        model.addAttribute("catalogs", catalogs);
-        return "/userspace/u::#catalogRepleace";
+        if (isOwner){
+            return generator.getSuccessResult("获取分类列表成功",catalogs).toString();
+        }
+        return generator.getFailResult("获取分类列表失败",isOwner).toString();
     }
 
     /**
      * 发表分类
-     *
      * @param catalogVO
      * @return
      */
     @PostMapping
     @PreAuthorize("authentication.name.equals(#catalogVO.username)")//指定用户才能操作方法
-    public ResponseEntity<Response> create(@RequestBody CatalogVO catalogVO) {
+    public String createCatalogs(@RequestBody CatalogVO catalogVO){
         String username = catalogVO.getUsername();
         Catalog catalog = catalogVO.getCatalog();
 
         User user = (User) userDetailsService.loadUserByUsername(username);
-
         try {
             catalog.setUser(user);
             catalogService.saveCatalog(catalog);
-        } catch (ConstraintViolationException e) {
-            return ResponseEntity.ok().body(new Response(false, ConstraintViolationExceptionHandler.getMessage(e)));
-        } catch (Exception e) {
-            return ResponseEntity.ok().body(new Response(false, e.getMessage()));
+        }catch (Exception e){
+            return generator.getFailResult(e.getMessage(),catalog).toString();
         }
-
-        return ResponseEntity.ok().body(new Response(true, "处理成功", null));
+        return generator.getSuccessResult("添加分类成功",catalog).toString();
     }
 
     /**
      * 删除分类
-     *
      * @param username
      * @param id
      * @return
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("authentication.name.equals(#username)")//指定用户才能操作方法
-    public ResponseEntity<Response> delete(String username, @PathVariable("id") Long id) {
+    @PreAuthorize("authentication.name.equals(#username)")
+    public String deleteCatalogById(String username,@PathVariable("id") Long id){
         try {
             catalogService.removeCatalog(id);
-        } catch (ConstraintViolationException e) {
-            return ResponseEntity.ok().body(new Response(false, ConstraintViolationExceptionHandler.getMessage(e)));
-        } catch (Exception e) {
-            return ResponseEntity.ok().body(new Response(false, e.getMessage()));
+        }catch (Exception e){
+            return generator.getFailResult(e.getMessage().toString()).toString();
         }
-
-        return ResponseEntity.ok().body(new Response(true, "处理成功", null));
-    }
-
-    /**
-     * 获取分类编辑界面
-     *
-     * @param model
-     * @return
-     */
-    @GetMapping("/edit")
-    public String getCatalogEdit(Model model) {
-        Catalog catalog = new Catalog(null, null);
-        model.addAttribute("catalog", catalog);
-        return "/userspace/catalogedit";
+        return generator.getSuccessResult("删除指定分类成功").toString();
     }
 
     /**
@@ -130,8 +112,10 @@ public class CatalogController {
     @GetMapping("/edit/{id}")
     public String getCatalogById(@PathVariable("id") Long id, Model model) {
         Catalog catalog = catalogService.getCatalogById(id);
-        model.addAttribute("catalog", catalog);
-        return "/userspace/catalogedit";
+        if (catalog!=null){
+            return generator.getSuccessResult("获取分类信息成功",catalog).toString();
+        }
+        return generator.getFailResult("获取分类信息失败").toString();
     }
 
 }
