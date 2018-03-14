@@ -6,6 +6,7 @@ import com.onwl007.blog.domain.User;
 import com.onwl007.blog.service.BlogService;
 import com.onwl007.blog.service.CommentService;
 import com.onwl007.blog.util.ConstraintViolationExceptionHandler;
+import com.onwl007.blog.util.ResultGenerator;
 import com.onwl007.blog.vo.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,9 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private ResultGenerator generator;
+
     /**
      * 获取评论列表
      *
@@ -56,9 +60,10 @@ public class CommentController {
             }
         }
 
-        model.addAttribute("commentOwner", commentOwner);
-        model.addAttribute("comments", comments);
-        return "/userspace/blog::#mainContainerReplace";
+        if (commentOwner != null) {
+            return generator.getSuccessResult("获取评论列表成功", comments).toString();
+        }
+        return generator.getFailResult("获取评论列表失败").toString();
     }
 
     /**
@@ -70,16 +75,14 @@ public class CommentController {
      */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')") //指定角色权限才能操作方法
-    public ResponseEntity<Response> createComment(Long blogId, String commentContent) {
+    public String createComment(Long blogId, String commentContent) {
         try {
             blogService.createComment(blogId, commentContent);
-        } catch (ConstraintViolationException e) {
-            return ResponseEntity.ok().body(new Response(false, ConstraintViolationExceptionHandler.getMessage(e)));
         } catch (Exception e) {
-            return ResponseEntity.ok().body(new Response(false, e.getMessage()));
+            return generator.getFailResult(e.getMessage().toString()).toString();
         }
 
-        return ResponseEntity.ok().body(new Response(true, "处理成功", null));
+        return generator.getSuccessResult("发表评论成功").toString();
     }
 
     /**
@@ -91,7 +94,7 @@ public class CommentController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')") //指定角色权限才能操作方法
-    public ResponseEntity<Response> delete(@PathVariable("id") Long id, Long blogId) {
+    public String delete(@PathVariable("id") Long id, Long blogId) {
         boolean isOwner = false;
         User user = commentService.getCommentById(id).getUser();
 
@@ -105,19 +108,17 @@ public class CommentController {
         }
 
         if (!isOwner) {
-            return ResponseEntity.ok().body(new Response(false, "没有操作权限"));
+            return generator.getFailResult("没有操作权限。删除评论失败").toString();
         }
 
         try {
             blogService.removeComment(blogId, id);
             commentService.removeComment(id);
-        } catch (ConstraintViolationException e) {
-            return ResponseEntity.ok().body(new Response(false, ConstraintViolationExceptionHandler.getMessage(e)));
         } catch (Exception e) {
-            return ResponseEntity.ok().body(new Response(false, e.getMessage()));
+            return generator.getFailResult(e.getMessage().toString()).toString();
         }
 
-        return ResponseEntity.ok().body(new Response(true, "处理成功", null));
+        return generator.getSuccessResult("删除评论成功").toString();
 
     }
 }

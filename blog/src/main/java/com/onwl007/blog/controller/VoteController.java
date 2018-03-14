@@ -4,6 +4,7 @@ import com.onwl007.blog.domain.User;
 import com.onwl007.blog.service.BlogService;
 import com.onwl007.blog.service.VoteService;
 import com.onwl007.blog.util.ConstraintViolationExceptionHandler;
+import com.onwl007.blog.util.ResultGenerator;
 import com.onwl007.blog.vo.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,9 @@ public class VoteController {
     @Autowired
     private VoteService voteService;
 
+    @Autowired
+    private ResultGenerator generator;
+
 
     /**
      * 发表点赞
@@ -42,16 +46,14 @@ public class VoteController {
      */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')") //指定角色权限才能操作方法
-    public ResponseEntity<Response> createVote(Long blogId) {
+    public String createVote(Long blogId) {
         try {
             blogService.createVote(blogId);
-        } catch (ConstraintViolationException e) {
-            return ResponseEntity.ok().body(new Response(false, ConstraintViolationExceptionHandler.getMessage(e)));
         } catch (Exception e) {
-            return ResponseEntity.ok().body(new Response(false, e.getMessage()));
+            return generator.getFailResult("发表点赞失败").toString();
         }
 
-        return ResponseEntity.ok().body(new Response(true, "点赞成功", null));
+        return generator.getSuccessResult("发表点赞成功").toString();
     }
 
     /**
@@ -63,7 +65,7 @@ public class VoteController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER')")  //指定角色权限才能操作方法
-    public ResponseEntity<Response> delete(@PathVariable("id") Long id, Long blogId) {
+    public String delete(@PathVariable("id") Long id, Long blogId) {
         boolean isOwner = false;
         User user = voteService.getVoteById(id).getUser();
 
@@ -77,19 +79,17 @@ public class VoteController {
         }
 
         if (!isOwner) {
-            return ResponseEntity.ok().body(new Response(false, "没有操作权限"));
+            return generator.getFailResult("没有操作权限，删除点赞失败").toString();
         }
 
         try {
             blogService.removeVote(blogId, id);
             voteService.removeVote(id);
-        } catch (ConstraintViolationException e) {
-            return ResponseEntity.ok().body(new Response(false, ConstraintViolationExceptionHandler.getMessage(e)));
         } catch (Exception e) {
-            return ResponseEntity.ok().body(new Response(false, e.getMessage()));
+            return generator.getFailResult(e.getMessage().toString()).toString();
         }
 
-        return ResponseEntity.ok().body(new Response(true, "取消点赞成功", null));
+        return generator.getSuccessResult("删除点赞成功").toString();
     }
 
 }
